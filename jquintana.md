@@ -26,27 +26,27 @@ El documento Markdown debera contener el proceso tecnico que el participante ha 
 y el link del proyecto Githab debera ser registrado como entregable de esta tarea.
 
 # Desarrollo del Exámen
-## Crear Servicio Vinculado 
+## :point_right: Crear Servicio Vinculado 
 Se crea un servicio vinculado en este caso ya tenias creado por lo que lo reutilizamos, previamente habiamos instalado un Integration Runtime en la máquina o server que tenga acceso a la base de datos y configuramos con el Key de Azure.
 ![image](https://user-images.githubusercontent.com/108035896/175313416-40166d78-a1c9-459b-9e3d-6afbaf3726fb.png)
 
-## Crear Data Source de Origen (en este caso lo reutilizamos) SourceDataset_xer
+## :point_right: Crear Data Source de Origen (en este caso lo reutilizamos) SourceDataset_xer
 Se crea el Data Origen con un parametro que es el nombre de la tabla
 ![image](https://user-images.githubusercontent.com/108035896/175315801-f068f904-6ae8-4bb1-bfc7-59315e97a2d1.png)
 ![image](https://user-images.githubusercontent.com/108035896/175316037-c58f1063-1954-45ec-b710-08b8078e5df0.png)
 
-## Crear un Data Source Destino: DestinationDataset_examen
+## :point_right: Crear un Data Source Destino: DestinationDataset_examen
 Se crea un Data source con 2 parametros para enviar el nombre de la tabla y el usuario
 - **Ruta acceso:** synapse/workspaces/synapsecapacitacion/warehouse/raw/@{dataset().vUsuario}
 - **Nombre Tabla:** @{dataset().vTabla}.parquet
 ![image](https://user-images.githubusercontent.com/108035896/175183432-5c75bde7-a37d-4b14-b725-756049d594e5.png)
 
 
-## Crear Pipeline y nombrarlo según lo solicitado
+## :point_right: Crear Pipeline y nombrarlo según lo solicitado
 ![image](https://user-images.githubusercontent.com/108035896/175182084-2fbf91af-9f69-4524-b5a9-7d4504d542fb.png)
 
 # Copiar tablas 
-## Usamos un lookup para buscar el nombre de las tablas
+## :point_right: Usamos un lookup para buscar el nombre de las tablas
 - Cliente
 - Factura
 - facturaproducto
@@ -62,22 +62,22 @@ table_schema='dwh'
 ```
 ![image](https://user-images.githubusercontent.com/108035896/175184074-b139c0e1-84e6-4f3f-bcae-b8e544bbde2b.png)
 
-## Usamos un Foreach para copiar cada tabla 
+## :point_right: Usamos un Foreach para copiar cada tabla 
 Como elemento de la lista usamos los nombnres de la tablas que se obtienen del lookup: @activity('Tablas').output.value
 ![image](https://user-images.githubusercontent.com/108035896/175184623-c1b2022a-ffca-492f-8871-6dd0445eb619.png)
 
 Creamos la variable para el nombre del usuario
 ![image](https://user-images.githubusercontent.com/108035896/175184765-643155d3-538f-4c9b-b4fa-15d93280dca3.png)
 
-## Actividad Copiar Tabla
+## :point_right: Actividad Copiar Tabla
 Dentro del For Each cramos una activida para copiar la tabla usando el Datasource creado y le pasamos los 2 parametros
 ![image](https://user-images.githubusercontent.com/108035896/175184970-fc95944d-744a-4d78-86b8-e894015ee55b.png)
 
 
-## Resultado de la copia de tablas
+## :point_right: Resultado de la copia de tablas
 ![image](https://user-images.githubusercontent.com/108035896/175198809-636af7a2-b383-4f17-9e02-79ebd96bcc7b.png)
 
-## Creamos un Notebook jquintana_notebook_cargar_csv para copiar los datos del scv a un archivo parquet 
+## :point_right: Creamos un Notebook jquintana_notebook_cargar_csv para copiar los datos del scv a un archivo parquet 
 ```
 phyton
 %%pyspark
@@ -95,7 +95,7 @@ dfMails.repartition(1).write.mode("overwrite").parquet(vPathResultado)
 ```
 ![image](https://user-images.githubusercontent.com/108035896/175202512-6c37366f-8796-4d78-82fb-7cf0968a0879.png)
 
-## Creamos un Notebook jquintana_notebook_cargar_csv para obtener los datos de las tablas y crear la tabla resultado
+## :point_right: Creamos un Notebook jquintana_notebook_cargar_csv para obtener los datos de las tablas y crear la tabla resultado
 ![image](https://user-images.githubusercontent.com/108035896/175213995-fdc25eea-9ba8-4361-8320-298742d6d8a0.png)
 
 Los pasos realizados son:
@@ -178,12 +178,12 @@ dfResultado.write.mode("overwrite").saveAsTable("default.tbl_jquintana")
 vPathResultado = 'abfss://capacitacion@sesacapacitacion.dfs.core.windows.net/synapse/workspaces/synapsecapacitacion/warehouse/raw/jquintana/tbl_jquintana.parquet'
 dfResultado.repartition(1).write.mode("overwrite").parquet(vPathResultado)
 ```
-## Incluimos en el Pipeline los notebooks 
+## :point_right: Incluimos en el Pipeline los notebooks 
 Se añaden al pipeline los notebooks creados y se asigna el Grupo Spark para procesarlos
 ![image](https://user-images.githubusercontent.com/108035896/175215993-f06a8caf-261b-4359-9cca-007f45118a11.png)
 
 
-## Verificamos el resultado consultando la tabla
+## :point_right: Verificamos el resultado consultando la tabla
 ```
 sql
 SELECT TOP (100) [rowidcliente]
@@ -197,11 +197,11 @@ SELECT TOP (100) [rowidcliente]
 También se valida el archivo parquet creado
 ![image](https://user-images.githubusercontent.com/108035896/175215396-9389a9ef-d716-422e-85c6-bc6b7aca089a.png)
 
-# Pipeline Completo
+## :point_right: Pipeline Completo
 Se muestra el Pipeline final con todo el flujo 
 ![image](https://user-images.githubusercontent.com/108035896/175220061-5596bf96-f603-4667-96fd-51574320a7d3.png)
 
 
-# Ejecución del Pipeline satisfactoriamente
+## :point_right: Ejecución del Pipeline satisfactoriamente
 ![image](https://user-images.githubusercontent.com/108035896/175219914-dd1e0127-788b-4329-bc98-b212265f7d7f.png)
 
