@@ -26,14 +26,19 @@ El documento Markdown debera contener el proceso tecnico que el participante ha 
 y el link del proyecto Githab debera ser registrado como entregable de esta tarea.
 
 # Desarrollo del Exámen
+## Crear Servicio Vinculado 
+Se crea un servicio vinculado en este caso ya tenias creado por lo que lo reutilizamos, previamente habiamos instalado un Integration Runtime en la máquina o server que tenga acceso a la base de datos y configuramos con el Key de Azure.
+![image](https://user-images.githubusercontent.com/108035896/175313416-40166d78-a1c9-459b-9e3d-6afbaf3726fb.png)
 
-## Crear Data Source de Origen ( enn este caso lo reutilizamos) SourceDataset_xer
-![image](https://user-images.githubusercontent.com/108035896/175183883-65ae2b76-6d67-42d7-9c4d-09262f1542b9.png)
+## Crear Data Source de Origen (en este caso lo reutilizamos) SourceDataset_xer
+Se crea el Data Origen con un parametro que es el nombre de la tabla
+![image](https://user-images.githubusercontent.com/108035896/175315801-f068f904-6ae8-4bb1-bfc7-59315e97a2d1.png)
+![image](https://user-images.githubusercontent.com/108035896/175316037-c58f1063-1954-45ec-b710-08b8078e5df0.png)
 
-## Crear un Data Source De Destino: DestinationDataset_examen
+## Crear un Data Source Destino: DestinationDataset_examen
 Se crea un Data source con 2 parametros para enviar el nombre de la tabla y el usuario
-- Ruta acceso: synapse/workspaces/synapsecapacitacion/warehouse/raw/@{dataset().vUsuario}
-- Nombre Tabla: @{dataset().vTabla}.parquet
+- **Ruta acceso:** synapse/workspaces/synapsecapacitacion/warehouse/raw/@{dataset().vUsuario}
+- **Nombre Tabla:** @{dataset().vTabla}.parquet
 ![image](https://user-images.githubusercontent.com/108035896/175183432-5c75bde7-a37d-4b14-b725-756049d594e5.png)
 
 
@@ -93,7 +98,7 @@ dfMails.repartition(1).write.mode("overwrite").parquet(vPathResultado)
 ![image](https://user-images.githubusercontent.com/108035896/175213995-fdc25eea-9ba8-4361-8320-298742d6d8a0.png)
 
 Los pasos realizados son:
-- 1 Obtenemos los datos de los archivos parquet
+**1. Obtenemos los datos de los archivos parquet**
 ```
 python
 ## Obtenemos los datos de los archivos parquet     
@@ -113,7 +118,7 @@ dfProducto = spark.read.load(vPathProducto, format='parquet')
 vPathMail = 'abfss://capacitacion@sesacapacitacion.dfs.core.windows.net/synapse/workspaces/synapsecapacitacion/warehouse/raw/jquintana/mails.parquet'
 dfMail = spark.read.load(vPathMail, format='parquet')
 ```
-- 2 Creamos tablas temporales
+**2. Creamos tablas temporales**
 ```
 python
 ##Tablas Temporales
@@ -123,7 +128,7 @@ dfFacProducto.createOrReplaceTempView("tbl_facturaproducto")
 dfProducto.createOrReplaceTempView("tbl_producto")
 dfMail.createOrReplaceTempView("tbl_mail")
 ```
-- 3 Obtenemos el total de cada producto por cliente y creamos tabla temporal
+**3. Obtenemos el total de cada producto por cliente y creamos tabla temporal**
 ```
 python
 ##SQL Cantidad de producto x cliente
@@ -136,13 +141,12 @@ INNER JOIN tbl_producto P on p.rowidproducto = d.rowidproducto
 INNER JOIN tbl_mail m on m._c0 = c.rowidcliente
 GROUP BY c.rowidcliente,p.producto,m._c1
 """
-
 dfTotProdxCliente = spark.sql(vSql)
 ##display(dfTotProdxCliente)
 ## tala temporal
 dfTotProdxCliente.createOrReplaceTempView("tbl_TotProdxCliente")
 ```
-- 4 Obtenemos la cantidad máxima de producto por cliente
+**4. Obtenemos la cantidad máxima de producto por cliente**
 ```
 python
 ##SQL  máxima de producto por cliente
@@ -156,7 +160,7 @@ dfTotProdxCliente = spark.sql(vSql2)
 dfTotProdxCliente.createOrReplaceTempView("tbl_MaxProdxCliente")
 ## display(dfResultado)
 ```
-- 5 Obtenemos el resultado solciitado y creamos la tabla en el POOL SQL
+**5. Obtenemos el resultado solciitado y creamos la tabla en el POOL SQL**
 ```
 python
 ##SQL Creamos la tabla con el resultado solicitado uniendo las tablas anteriores
@@ -197,6 +201,6 @@ Se muestra el Pipeline final con todo el flujo
 ![image](https://user-images.githubusercontent.com/108035896/175220061-5596bf96-f603-4667-96fd-51574320a7d3.png)
 
 
-# Ejecución del Pipeline sin errores
+# Ejecución del Pipeline satisfactoriamente
 ![image](https://user-images.githubusercontent.com/108035896/175219914-dd1e0127-788b-4329-bc98-b212265f7d7f.png)
 
