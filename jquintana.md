@@ -134,7 +134,7 @@ dfMail.createOrReplaceTempView("tbl_mail")
 python
 ##SQL Cantidad de producto x cliente
 vSql = """
-SELECT c.rowidcliente,m._c1 correo,p.producto,max(d.fecha) fecha_ult_compra, count(p.rowidproducto) cantidad_Producto
+SELECT c.rowidcliente,m._c1 correo,p.producto,max(d.fecha) fecha_ult_compra, count(p.rowidproducto) cantidad_Producto,sum(d.valorventaproducto) ValorTotProducto
 FROM tbl_cliente c 
 INNER JOIN tbl_factura f on c.rowidcliente = f.rowidcliente
 INNER JOIN tbl_facturaproducto d on d.rowidfactura = f.rowidfactura
@@ -166,9 +166,11 @@ dfTotProdxCliente.createOrReplaceTempView("tbl_MaxProdxCliente")
 python
 ##SQL Creamos la tabla con el resultado solicitado uniendo las tablas anteriores
 vSql3 = """
-SELECT txp.rowidcliente,txp.producto,txp.correo,txp.fecha_ult_compra
+SELECT txp.rowidcliente,txp.producto,txp.correo,txp.fecha_ult_compra, txp.cantidad_Producto ,txp.ValorTotProducto
 FROM tbl_TotProdxCliente txp 
-inner join tbl_MaxProdxCliente mxp on mxp.rowidcliente = txp.rowidcliente and mxp.Maxcantidad_Producto = txp.cantidad_Producto
+inner join tbl_MaxProdxCliente mxp on mxp.rowidcliente = txp.rowidcliente 
+and mxp.Maxcantidad_Producto = txp.cantidad_Producto 
+and txp.ValorTotProducto = mxp.MaxValorTotProducto
 """
 ## Creamos tabla en Pool SQL
 dfResultado = spark.sql(vSql3)
