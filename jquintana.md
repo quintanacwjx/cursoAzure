@@ -51,7 +51,8 @@ Se crea un Data source con 2 parametros para enviar el nombre de la tabla y el u
 - Factura
 - facturaproducto
 - producto
-Usamos este query de SQL
+
+Usamos el siguiente query de SQL
 ``` sql
 select 
 table_name as tabla
