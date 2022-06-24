@@ -152,7 +152,7 @@ dfTotProdxCliente.createOrReplaceTempView("tbl_TotProdxCliente")
 python
 ##SQL  máxima de producto por cliente
 vSql2 = """
-SELECT txp.rowidcliente, max(txp.cantidad_Producto) Maxcantidad_Producto
+SELECT txp.rowidcliente, max(txp.cantidad_Producto) Maxcantidad_Producto, max(txp.ValorTotProducto) MaxValorTotProducto,max(fecha_ult_compra) Maxfecha_ult_compra
 FROM tbl_TotProdxCliente txp
 GROUP BY txp.rowidcliente
 """
@@ -171,6 +171,8 @@ FROM tbl_TotProdxCliente txp
 inner join tbl_MaxProdxCliente mxp on mxp.rowidcliente = txp.rowidcliente 
 and mxp.Maxcantidad_Producto = txp.cantidad_Producto 
 and txp.ValorTotProducto = mxp.MaxValorTotProducto
+and txp.fecha_ult_compra = mxp.Maxfecha_ult_compra
+"""
 """
 ## Creamos tabla en Pool SQL
 dfResultado = spark.sql(vSql3)
