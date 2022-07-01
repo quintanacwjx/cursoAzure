@@ -53,7 +53,7 @@ Se crea un Data source con 2 parametros para enviar el nombre de la tabla y el u
 - producto
 
 Usamos el siguiente query de SQL
-``` sql
+```sql
 select 
 table_name as tabla
 from information_schema. tables
@@ -78,9 +78,7 @@ Dentro del For Each cramos una activida para copiar la tabla usando el Datasourc
 ![image](https://user-images.githubusercontent.com/108035896/175198809-636af7a2-b383-4f17-9e02-79ebd96bcc7b.png)
 
 ## :point_right: Creamos un Notebook jquintana_notebook_cargar_csv para copiar los datos del scv a un archivo parquet 
-```
-phyton
-%%pyspark
+```phyton
 ## Leer archivo csv
 dfMails = spark.read.load('abfss://capacitacion@sesacapacitacion.dfs.core.windows.net/synapse/workspaces/synapsecapacitacion/warehouse/raw/clientes_correos.csv', format='csv'
 ## If header exists uncomment line below
@@ -100,8 +98,7 @@ dfMails.repartition(1).write.mode("overwrite").parquet(vPathResultado)
 
 Los pasos realizados son:
 **1. Obtenemos los datos de los archivos parquet**
-```
-python
+```python
 ## Obtenemos los datos de los archivos parquet     
 ## Cliente
 vPathCliente = 'abfss://capacitacion@sesacapacitacion.dfs.core.windows.net/synapse/workspaces/synapsecapacitacion/warehouse/raw/jquintana/cliente.parquet'
@@ -120,8 +117,7 @@ vPathMail = 'abfss://capacitacion@sesacapacitacion.dfs.core.windows.net/synapse/
 dfMail = spark.read.load(vPathMail, format='parquet')
 ```
 **2. Creamos tablas temporales**
-```
-python
+```python
 ##Tablas Temporales
 dfCliente.createOrReplaceTempView("tbl_cliente")
 dfFactura.createOrReplaceTempView("tbl_factura")
@@ -130,8 +126,7 @@ dfProducto.createOrReplaceTempView("tbl_producto")
 dfMail.createOrReplaceTempView("tbl_mail")
 ```
 **3. Obtenemos el total de cada producto por cliente y creamos tabla temporal**
-```
-python
+```python
 ##SQL Cantidad de producto x cliente
 vSql = """
 SELECT c.rowidcliente,m._c1 correo,p.producto,max(d.fecha) fecha_ult_compra, count(p.rowidproducto) cantidad_Producto,sum(d.valorventaproducto) ValorTotProducto
@@ -148,8 +143,7 @@ dfTotProdxCliente = spark.sql(vSql)
 dfTotProdxCliente.createOrReplaceTempView("tbl_TotProdxCliente")
 ```
 **4. Obtenemos la cantidad máxima de producto por cliente**
-```
-python
+```python
 ##SQL  máxima de producto por cliente
 vSql2 = """
 SELECT txp.rowidcliente, max(txp.cantidad_Producto) Maxcantidad_Producto, max(txp.ValorTotProducto) MaxValorTotProducto,max(fecha_ult_compra) Maxfecha_ult_compra
@@ -162,8 +156,7 @@ dfTotProdxCliente.createOrReplaceTempView("tbl_MaxProdxCliente")
 ## display(dfResultado)
 ```
 **5. Obtenemos el resultado solciitado y creamos la tabla en el POOL SQL**
-```
-python
+```python
 ##SQL Creamos la tabla con el resultado solicitado uniendo las tablas anteriores
 vSql3 = """
 SELECT txp.rowidcliente,txp.producto,txp.correo,txp.fecha_ult_compra, txp.cantidad_Producto ,txp.ValorTotProducto
@@ -188,8 +181,7 @@ Se añaden al pipeline los notebooks creados y se asigna el Grupo Spark para pro
 
 
 ## :point_right: Verificamos el resultado consultando la tabla
-```
-sql
+```sql
 SELECT TOP (100) [rowidcliente]
 ,[producto]
 ,[correo]
